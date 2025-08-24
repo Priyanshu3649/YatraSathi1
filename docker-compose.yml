@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: yatrasathi
+      MYSQL_ROOT_PASSWORD: 7894
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:mysql://db:3306/yatrasathi?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+      DB_USERNAME: root
+      DB_PASSWORD: 7894
+      JWT_SECRET: dev-secret-change-me-dev-secret-change-me
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8080:8080"
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment: {}
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+volumes:
+  db_data:
+
+
+
