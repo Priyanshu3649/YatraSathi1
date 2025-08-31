@@ -3,6 +3,15 @@ import { api } from '../lib/api'
 import CityDropdown from '../components/CityDropdown'
 import { sortedCities } from '../data/cities'
 
+type Passenger = {
+  id: number,
+  name: string,
+  age: number,
+  gender: string,
+  idProofType?: string,
+  idProofNumber?: string
+}
+
 type Ticket = { 
   id: number, 
   origin: string, 
@@ -11,7 +20,8 @@ type Ticket = {
   status: string,
   assignedPnr?: string,
   paymentAmount?: number,
-  approvedTicketCount?: number
+  approvedTicketCount?: number,
+  passengerCount?: number
 }
 
 type Payment = {
@@ -31,6 +41,8 @@ export default function EmployeeDashboard() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [pnrInput, setPnrInput] = useState('')
   const [paymentAmountInput, setPaymentAmountInput] = useState('')
+  const [selectedTicket, setSelectedTicket] = useState<number | null>(null)
+  const [passengers, setPassengers] = useState<Passenger[]>([])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -53,24 +65,40 @@ export default function EmployeeDashboard() {
   async function load() {
     try {
       const [pendingRes, approvedRes, ticketCreatedRes, confirmedRes, paymentsRes] = await Promise.all([
-        api.get('/tickets/pending'),
-        api.get('/tickets/approved'),
-        api.get('/tickets/ticket-created'),
-        api.get('/tickets/confirmed'),
-        api.get('/payments/all')
+        api.get('/api/tickets/pending'),
+        api.get('/api/tickets/approved'),
+        api.get('/api/tickets/ticket-created'),
+        api.get('/api/tickets/confirmed'),
+        api.get('/api/payments/all')
       ])
       setPending(pendingRes.data)
       setApproved(approvedRes.data)
       setTicketCreated(ticketCreatedRes.data)
       setConfirmed(confirmedRes.data)
       setPayments(paymentsRes.data)
+      
+      // Reset selected ticket when reloading data
+      setSelectedTicket(null)
+      setPassengers([])
     } catch (error: any) {
       console.error('Error loading data:', error)
     }
   }
+  
+  async function loadPassengers(ticketId: number) {
+    try {
+      const response = await api.get(`/api/passengers/ticket/${ticketId}`)
+      // No change needed as this endpoint doesn't have an '/api/' prefix to remove
+      setPassengers(response.data)
+      setSelectedTicket(ticketId)
+    } catch (error: any) {
+      console.error('Error loading passenger details:', error)
+      alert('Failed to load passenger details')
+    }
+  }
 
   async function approve(id: number) {
-    await api.post(`/tickets/${id}/approve?count=2`)
+    await api.post(`/api/tickets/${id}/approve?count=2`)
     await load()
   }
 
@@ -83,19 +111,19 @@ export default function EmployeeDashboard() {
       alert('Please enter a valid payment amount')
       return
     }
-    await api.post(`/tickets/${id}/create-ticket?pnr=${pnrInput}&paymentAmount=${paymentAmountInput}`)
+    await api.post(`/api/tickets/${id}/create-ticket?pnr=${pnrInput}&paymentAmount=${paymentAmountInput}`)
     setPnrInput('')
     setPaymentAmountInput('')
     await load()
   }
 
   async function confirm(id: number) {
-    await api.post(`/tickets/${id}/confirm`)
+    await api.post(`/api/tickets/${id}/confirm`)
     await load()
   }
 
   async function updatePaymentStatus(paymentId: number, status: string) {
-    await api.post(`/payments/${paymentId}/update-status?status=${status}`)
+    await api.post(`/api/payments/${paymentId}/update-status?status=${status}`)
     await load()
   }
 
@@ -139,6 +167,7 @@ export default function EmployeeDashboard() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passengers</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -153,6 +182,14 @@ export default function EmployeeDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(t.travelDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button 
+                        className="text-blue-600 hover:text-blue-800 transition duration-200 underline"
+                        onClick={() => loadPassengers(t.id)}
+                      >
+                        View {t.passengerCount || 1} passenger{(t.passengerCount || 1) > 1 ? 's' : ''}
+                      </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button 
@@ -196,6 +233,7 @@ export default function EmployeeDashboard() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passengers</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PNR Number</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Amount</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -212,6 +250,14 @@ export default function EmployeeDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(t.travelDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button 
+                        className="text-blue-600 hover:text-blue-800 transition duration-200 underline"
+                        onClick={() => loadPassengers(t.id)}
+                      >
+                        View {t.passengerCount || 1} passenger{(t.passengerCount || 1) > 1 ? 's' : ''}
+                      </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <input 
@@ -273,6 +319,7 @@ export default function EmployeeDashboard() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passengers</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PNR</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -289,6 +336,14 @@ export default function EmployeeDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(t.travelDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button 
+                        className="text-blue-600 hover:text-blue-800 transition duration-200 underline"
+                        onClick={() => loadPassengers(t.id)}
+                      >
+                        View {t.passengerCount || 1} passenger{(t.passengerCount || 1) > 1 ? 's' : ''}
+                      </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
                       {t.assignedPnr}
@@ -338,6 +393,7 @@ export default function EmployeeDashboard() {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passengers</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PNR</th>
                 </tr>
               </thead>
@@ -352,6 +408,14 @@ export default function EmployeeDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(t.travelDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button 
+                        className="text-blue-600 hover:text-blue-800 transition duration-200 underline"
+                        onClick={() => loadPassengers(t.id)}
+                      >
+                        View {t.passengerCount || 1} passenger{(t.passengerCount || 1) > 1 ? 's' : ''}
+                      </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono bg-gray-100 px-2 py-1 rounded">
                       {t.assignedPnr}
@@ -445,6 +509,67 @@ export default function EmployeeDashboard() {
           </div>
         )}
       </div>
+      
+      {/* Passenger Details Modal */}
+      {selectedTicket !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Passenger Details</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700 transition duration-200"
+                onClick={() => setSelectedTicket(null)}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {passengers.length === 0 ? (
+              <div className="text-center py-12">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No passenger details found</h3>
+                <p className="mt-1 text-sm text-gray-500">The customer has not provided passenger details yet</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {passengers.map((passenger, index) => (
+                  <div key={passenger.id} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <h3 className="text-lg font-semibold mb-4">Passenger {index + 1}</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <p className="text-sm text-gray-500">Full Name</p>
+                        <p className="text-base font-medium">{passenger.name}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-500">Age</p>
+                        <p className="text-base font-medium">{passenger.age}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-500">Gender</p>
+                        <p className="text-base font-medium">{passenger.gender}</p>
+                      </div>
+                      
+                      {passenger.idProofType && (
+                        <div>
+                          <p className="text-sm text-gray-500">ID Proof</p>
+                          <p className="text-base font-medium">{passenger.idProofType}: {passenger.idProofNumber}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

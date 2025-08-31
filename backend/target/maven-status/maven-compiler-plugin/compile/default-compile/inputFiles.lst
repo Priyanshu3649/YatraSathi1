@@ -14,6 +14,10 @@
 /Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/employee/EmployeeController.java
 /Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/employee/EmployeeRepository.java
 /Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/notification/NotificationService.java
+/Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/passenger/Passenger.java
+/Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/passenger/PassengerController.java
+/Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/passenger/PassengerRepository.java
+/Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/passenger/PassengerService.java
 /Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/payment/Payment.java
 /Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/payment/PaymentController.java
 /Users/priyanshu/Downloads/YatraSathi/backend/src/main/java/com/yatrasathi/payment/PaymentRepository.java

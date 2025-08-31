@@ -47,9 +47,9 @@ export default function AdminDashboard() {
   async function load() {
     try {
       const [summaryRes, paymentsRes, ticketsRes] = await Promise.all([
-        api.get('/dashboard/admin'),
-        api.get('/payments/all'),
-        api.get('/tickets/confirmed')
+        api.get('/api/dashboard/admin'),
+        api.get('/api/payments/all'),
+        api.get('/api/tickets/confirmed')
       ])
       setSummary(summaryRes.data)
       setPayments(paymentsRes.data)
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
   }
 
   async function updatePaymentStatus(paymentId: number, status: string) {
-    await api.post(`/payments/${paymentId}/update-status?status=${status}`)
+    await api.post(`/api/payments/${paymentId}/update-status?status=${status}`)
     await load()
   }
 

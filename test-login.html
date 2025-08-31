@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h2>Test Login</h2>
+    <form id="loginForm">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" value="admin@yatrasathi.com">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="Admin@123">
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const resultDiv = document.getElementById('result');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                // Use the frontend's proxy instead of direct backend calls
+                const response = await axios.post('http://localhost:5173/api/auth/login', {
+                    username,
+                    password
+                });
+                
+                resultDiv.innerHTML = `<pre>Login successful!\nResponse: ${JSON.stringify(response.data, null, 2)}</pre>`;
+                console.log('Login response:', response.data);
+            } catch (error) {
+                resultDiv.innerHTML = `<pre>Login failed!\nError: ${error.message}\nResponse: ${JSON.stringify(error.response?.data, null, 2)}</pre>`;
+                console.error('Login error:', error.response?.data || error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Fix</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>YatraSathi Login Test</h1>
+    
+    <div class="card">
+        <h2>Customer Login</h2>
+        <button onclick="testLogin('customer1@yatrasathi.com', 'Cust@123')">Test Customer Login</button>
+        <div id="customerResult"></div>
+    </div>
+
+    <div class="card">
+        <h2>Employee Login</h2>
+        <button onclick="testLogin('employee1@yatrasathi.com', 'Emp@123')">Test Employee Login</button>
+        <div id="employeeResult"></div>
+    </div>
+
+    <div class="card">
+        <h2>Admin Login</h2>
+        <button onclick="testLogin('admin@yatrasathi.com', 'Admin@123')">Test Admin Login</button>
+        <div id="adminResult"></div>
+    </div>
+
+    <script>
+        async function testLogin(username, password) {
+            const resultId = username.includes('customer') ? 'customerResult' : 
+                             username.includes('employee') ? 'employeeResult' : 'adminResult';
+            const resultElement = document.getElementById(resultId);
+            
+            resultElement.innerHTML = '<p>Testing login...</p>';
+            
+            try {
+                // Use the frontend proxy URL instead of direct backend URL
+                const response = await axios.post('http://localhost:5173/api/auth/login', {
+                    username,
+                    password
+                });
+                
+                resultElement.innerHTML = `
+                    <p class="success">Login successful!</p>
+                    <pre>${JSON.stringify(response.data, null, 2)}</pre>
+                `;
+                
+                console.log('Login response:', response.data);
+            } catch (error) {
+                resultElement.innerHTML = `
+                    <p class="error">Login failed: ${error.message}</p>
+                    <pre>${JSON.stringify(error.response?.data || error, null, 2)}</pre>
+                `;
+                
+                console.error('Login error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -12,9 +12,11 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      const res = await api.post('/auth/login', { username, password })
-      const { token, role } = res.data
+      console.log('Attempting login with:', { username, password })
+      // Add /api prefix since we removed it from baseURL in api.ts
+      const res = await api.post('/api/auth/login', { username, password })
       console.log('Login response:', res.data)
+      const { token, role } = res.data
       console.log('Role:', role)
       localStorage.setItem('token', token)
       localStorage.setItem('userRole', role)
@@ -29,6 +31,7 @@ export default function Login() {
         navigate('/customer')
       }
     } catch (err: any) {
+      console.error('Login error:', err)
       setError(err?.response?.data?.message || 'Login failed')
     }
   }

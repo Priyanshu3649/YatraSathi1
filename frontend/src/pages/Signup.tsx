@@ -14,9 +14,12 @@ export default function Signup() {
     e.preventDefault()
     setError('')
     try {
-      await api.post('/auth/signup', { email, phone, aadhaar, password, role: 'CUSTOMER' })
+      console.log('Attempting signup with:', { email, phone, aadhaar })
+      // Add /api prefix since we removed it from baseURL in api.ts
+      await api.post('/api/auth/signup', { email, phone, aadhaar, password, role: 'CUSTOMER' })
       navigate('/login')
     } catch (err: any) {
+      console.error('Signup error:', err)
       setError(err?.response?.data?.message || 'Signup failed')
     }
   }

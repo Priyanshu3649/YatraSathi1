@@ -47,6 +47,8 @@ public class TicketRequest {
     @Enumerated(EnumType.STRING)
     private TicketStatus status = TicketStatus.PENDING;
 
+    private Integer passengerCount = 1;
+
     private Integer approvedTicketCount;
 
     private String assignedPnr;
@@ -66,6 +68,7 @@ public class TicketRequest {
     public BerthPreference getBerthPreference() { return berthPreference; }
     public String getSpecialRequirements() { return specialRequirements; }
     public TicketStatus getStatus() { return status; }
+    public Integer getPassengerCount() { return passengerCount; }
     public Integer getApprovedTicketCount() { return approvedTicketCount; }
     public String getAssignedPnr() { return assignedPnr; }
     public BigDecimal getPaymentAmount() { return paymentAmount; }
@@ -81,6 +84,7 @@ public class TicketRequest {
     public void setBerthPreference(BerthPreference berthPreference) { this.berthPreference = berthPreference; }
     public void setSpecialRequirements(String specialRequirements) { this.specialRequirements = specialRequirements; }
     public void setStatus(TicketStatus status) { this.status = status; }
+    public void setPassengerCount(Integer passengerCount) { this.passengerCount = passengerCount; }
     public void setApprovedTicketCount(Integer approvedTicketCount) { this.approvedTicketCount = approvedTicketCount; }
     public void setAssignedPnr(String assignedPnr) { this.assignedPnr = assignedPnr; }
     public void setPaymentAmount(BigDecimal paymentAmount) { this.paymentAmount = paymentAmount; }

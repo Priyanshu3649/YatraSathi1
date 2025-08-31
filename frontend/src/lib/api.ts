@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const baseURL = '/api'
+// Remove the '/api' prefix since the Vite proxy already handles this
+const baseURL = ''
 
 export const api = axios.create({ baseURL })
 

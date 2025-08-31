@@ -27,8 +27,14 @@ public class TicketService {
         User customer = userRepository.findById(userId).orElseThrow();
         request.setCustomer(customer);
         request.setStatus(TicketStatus.PENDING);
+        
+        // Ensure passenger count is at least 1
+        if (request.getPassengerCount() == null || request.getPassengerCount() < 1) {
+            request.setPassengerCount(1);
+        }
+        
         TicketRequest saved = ticketRepo.save(request);
-        auditService.log(customer.getEmail(), "CREATE_TICKET_REQUEST", "RequestId=" + saved.getId());
+        auditService.log(customer.getEmail(), "CREATE_TICKET_REQUEST", "RequestId=" + saved.getId() + ", PassengerCount=" + saved.getPassengerCount());
         return saved;
     }
 
