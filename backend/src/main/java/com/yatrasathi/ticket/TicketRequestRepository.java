@@ -12,7 +12,7 @@ public interface TicketRequestRepository extends JpaRepository<TicketRequest, Lo
     List<TicketRequest> findByCustomer(User customer);
     List<TicketRequest> findByStatus(TicketStatus status);
     List<TicketRequest> findByTravelDate(LocalDate date);
-    List<TicketRequest> findByAssignedEmployee(Employee employee);
+    List<TicketRequest> findByEmployee(User employee);
 }
 
 

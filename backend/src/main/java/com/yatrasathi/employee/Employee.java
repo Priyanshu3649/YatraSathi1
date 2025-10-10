@@ -2,47 +2,50 @@ package com.yatrasathi.employee;
 
 import com.yatrasathi.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @Entity
-@Table(name = "employees")
+@Table(name = "employee_details")
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "employee_id")
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User account;
+    @MapsId
+    @JoinColumn(name = "employee_id")
+    private User user;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String department;
-
-    @Column(nullable = false)
+    @Column(name = "designation")
     private String designation;
-
-    @Column(nullable = false)
-    private boolean active = true;
+    
+    @Column(name = "salary")
+    private BigDecimal salary;
+    
+    @Column(name = "joined_on")
+    private LocalDate joinedOn;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private EmployeeStatus status = EmployeeStatus.ACTIVE;
 
     // Getters
     public Long getId() { return id; }
-    public User getAccount() { return account; }
-    public String getName() { return name; }
-    public String getDepartment() { return department; }
+    public User getUser() { return user; }
     public String getDesignation() { return designation; }
-    public boolean isActive() { return active; }
+    public BigDecimal getSalary() { return salary; }
+    public LocalDate getJoinedOn() { return joinedOn; }
+    public EmployeeStatus getStatus() { return status; }
 
     // Setters
     public void setId(Long id) { this.id = id; }
-    public void setAccount(User account) { this.account = account; }
-    public void setName(String name) { this.name = name; }
-    public void setDepartment(String department) { this.department = department; }
+    public void setUser(User user) { this.user = user; }
     public void setDesignation(String designation) { this.designation = designation; }
-    public void setActive(boolean active) { this.active = active; }
+    public void setSalary(BigDecimal salary) { this.salary = salary; }
+    public void setJoinedOn(LocalDate joinedOn) { this.joinedOn = joinedOn; }
+    public void setStatus(EmployeeStatus status) { this.status = status; }
 }

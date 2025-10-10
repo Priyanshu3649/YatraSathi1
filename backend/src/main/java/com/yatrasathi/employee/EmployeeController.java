@@ -24,7 +24,7 @@ public class EmployeeController {
     @GetMapping("/requests/assigned/{employeeId}")
     public ResponseEntity<List<TicketRequest>> assigned(@PathVariable Long employeeId) {
         Employee e = employeeRepository.findById(employeeId).orElseThrow();
-        return ResponseEntity.ok(ticketRequestRepository.findByAssignedEmployee(e));
+        return ResponseEntity.ok(ticketRequestRepository.findByEmployee(e.getUser()));
     }
 
     @PostMapping("/requests/{requestId}/assign/{employeeId}")

@@ -18,6 +18,7 @@ public class DataInitializer {
             // Admin
             if (!users.existsByEmail("admin@yatrasathi.com")) {
                 User admin = new User();
+                admin.setName("Admin User");
                 admin.setEmail("admin@yatrasathi.com");
                 admin.setPhone("9999999999");
                 admin.setAadhaar("999999999999");
@@ -29,6 +30,7 @@ public class DataInitializer {
             // Employee
             if (!users.existsByEmail("employee1@yatrasathi.com")) {
                 User empUser = new User();
+                empUser.setName("Employee One");
                 empUser.setEmail("employee1@yatrasathi.com");
                 empUser.setPhone("8888888888");
                 empUser.setAadhaar("888888888888");
@@ -37,9 +39,7 @@ public class DataInitializer {
                 empUser = users.save(empUser);
 
                 Employee employee = new Employee();
-                employee.setAccount(empUser);
-                employee.setName("Employee One");
-                employee.setDepartment("Operations");
+                employee.setUser(empUser);
                 employee.setDesignation("Ticket Agent");
                 employees.save(employee);
             }
@@ -47,6 +47,7 @@ public class DataInitializer {
             // Customer
             if (!users.existsByEmail("customer1@yatrasathi.com")) {
                 User customer = new User();
+                customer.setName("Customer One");
                 customer.setEmail("customer1@yatrasathi.com");
                 customer.setPhone("7777777777");
                 customer.setAadhaar("777777777777");

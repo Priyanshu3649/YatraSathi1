@@ -5,6 +5,11 @@ import CustomerDashboard from './pages/CustomerDashboard'
 import EmployeeDashboard from './pages/EmployeeDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 
+// Temporary component placeholders until they're fully implemented
+const NewBooking = () => <div className="p-6 bg-white rounded-lg shadow-md"><h1 className="text-2xl font-bold mb-4">New Booking</h1><p>Booking form will be implemented here</p></div>
+const MyTickets = () => <div className="p-6 bg-white rounded-lg shadow-md"><h1 className="text-2xl font-bold mb-4">My Tickets</h1><p>Your tickets will appear here</p></div>
+const MyPayments = () => <div className="p-6 bg-white rounded-lg shadow-md"><h1 className="text-2xl font-bold mb-4">My Payments</h1><p>Your payment history will appear here</p></div>
+
 export default function App() {
   const token = localStorage.getItem('token')
   const userRole = localStorage.getItem('userRole')
@@ -78,6 +83,9 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/customer" element={<CustomerDashboard />} />
+          <Route path="/new-booking" element={<NewBooking />} />
+          <Route path="/my-tickets" element={<MyTickets />} />
+          <Route path="/my-payments" element={<MyPayments />} />
           <Route path="/employee" element={<EmployeeDashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
